@@ -30,6 +30,7 @@ public interface EmployeeMapper {
 
     /**
      * 分页查询员工
+     *
      * @param employeePageQueryDTO
      * @return
      */
@@ -37,7 +38,16 @@ public interface EmployeeMapper {
 
     /**
      * 根据主键动态修改员工属性
+     *
      * @param employee
      */
     void update(Employee employee);
+
+    /**
+     * 根据ID查询员工信息
+     * @param id
+     * @return
+     */
+    @Select("select * from employee where id = #{id}")
+    Employee getById(Long id);
 }
