@@ -2,6 +2,7 @@ package com.sky.controller.admin;
 
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.exception.BaseException;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
@@ -42,6 +43,7 @@ public class SetmealController {
     @ApiOperation("删除套餐")
     public Result delete(@RequestParam List<Long> ids) {
         log.info("删除套餐:{}", ids);
+        if (ids.isEmpty()) throw new BaseException("没有选择要删除的菜品");
         setmealService.deleteBatch(ids);
         return Result.success();
     }
@@ -65,7 +67,7 @@ public class SetmealController {
 
     @PostMapping("/status/{status}")
     @ApiOperation("启售或停售套餐")
-    public Result updateStatus(@PathVariable Integer status, @RequestParam Long id){
+    public Result updateStatus(@PathVariable Integer status, @RequestParam Long id) {
         log.info("启售或停售套餐, status: {}, id: {}", status, id);
         setmealService.startOrStop(status, id);
         return Result.success();
