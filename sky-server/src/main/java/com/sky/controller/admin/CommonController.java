@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
@@ -43,6 +45,10 @@ public class CommonController {
             assert originalFilename != null;
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String objectName = UUID.randomUUID() + extension;
+
+            String dir = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+            objectName = dir + "/" + objectName;
+
 
             String filePath = aliOssUtil.upload(file.getBytes(), objectName);
             return Result.success(filePath);
