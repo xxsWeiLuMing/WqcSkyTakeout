@@ -187,19 +187,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void userCancelById(Long id) throws Exception{
-        // 根据id查询订单
+    public void userCancelById(Long id) throws Exception {
+
+        // 校验订单
+        // 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
         Orders ordersDB = orderMapper.getById(id);
-
-        // 校验订单是否存在
-        if (ordersDB == null) {
-            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
-        }
-
-        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
-        if (ordersDB.getStatus() > 2) {
-            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
-        }
+        if (ordersDB == null) throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        if (ordersDB.getStatus() > 2) throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
 
         Orders orders = new Orders();
         orders.setId(ordersDB.getId());
