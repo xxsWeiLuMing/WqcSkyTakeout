@@ -525,10 +525,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderPaymentVO success(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
-        //paySuccess(ordersPaymentDTO.getOrderNumber());
-        Orders orders = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber());
-        orders.setStatus(Orders.TO_BE_CONFIRMED);
-        orderMapper.update(orders);
+        paySuccess(ordersPaymentDTO.getOrderNumber());
         return weChatPayUtil.sucess(ordersPaymentDTO.getOrderNumber()).toJavaObject(OrderPaymentVO.class);
     }
 }
