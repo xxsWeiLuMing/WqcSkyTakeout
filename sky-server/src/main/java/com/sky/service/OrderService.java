@@ -57,4 +57,6 @@ public interface OrderService {
     void complete(Long id);
 
     OrderPaymentVO success(OrdersPaymentDTO ordersPaymentDTO) throws Exception;
+
+    void reminder(Long id);
 }

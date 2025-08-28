@@ -541,4 +541,22 @@ public class OrderServiceImpl implements OrderService {
         paySuccess(ordersPaymentDTO.getOrderNumber());
         return weChatPayUtil.sucess(ordersPaymentDTO.getOrderNumber()).toJavaObject(OrderPaymentVO.class);
     }
+
+    @Override
+    public void reminder(Long id) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        // 校验订单是否存在
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map map = new HashMap();
+        map.put("type", 2);
+        map.put("orderId", id);
+        map.put("content", "订单号:" + ordersDB.getNumber());
+
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
 }
