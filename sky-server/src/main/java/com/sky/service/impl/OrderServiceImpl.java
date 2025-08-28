@@ -525,4 +525,9 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderBusinessException("超出配送范围");
         }
     }
+
+    @Override
+    public OrderPaymentVO success(OrdersPaymentDTO ordersPaymentDTO) {
+        return null;
+    }
 }

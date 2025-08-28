@@ -55,4 +55,6 @@ public interface OrderService {
      * @param id
      */
     void complete(Long id);
+
+    OrderPaymentVO success(OrdersPaymentDTO ordersPaymentDTO);
 }

@@ -43,6 +43,10 @@ public class OrderController {
         OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
         log.info("生成预支付交易单：{}", orderPaymentVO);
         return Result.success(orderPaymentVO);
+
+        /*log.info("跳过支付，默认支付成功:{}", ordersPaymentDTO);
+        OrderPaymentVO orderPaymentVO = orderService.success(ordersPaymentDTO);
+        return Result.success(orderPaymentVO);*/
     }
 
     /**
