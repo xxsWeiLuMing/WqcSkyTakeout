@@ -21,7 +21,9 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,12 +31,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.security.Signature;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -527,7 +529,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderPaymentVO success(OrdersPaymentDTO ordersPaymentDTO) {
-        return null;
+    public OrderPaymentVO success(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
+        //paySuccess(ordersPaymentDTO.getOrderNumber());
+        Orders orders = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber());
+        orders.setStatus(Orders.TO_BE_CONFIRMED);
+        orderMapper.update(orders);
+        return weChatPayUtil.sucess(ordersPaymentDTO.getOrderNumber()).toJavaObject(OrderPaymentVO.class);
     }
 }

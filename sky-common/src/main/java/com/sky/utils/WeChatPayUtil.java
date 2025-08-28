@@ -208,10 +208,10 @@ public class WeChatPayUtil {
     /**
      * 申请退款
      *
-     * @param outTradeNo    商户订单号
-     * @param outRefundNo   商户退款单号
-     * @param refund        退款金额
-     * @param total         原订单金额
+     * @param outTradeNo  商户订单号
+     * @param outRefundNo 商户退款单号
+     * @param refund      退款金额
+     * @param total       原订单金额
      * @return
      */
     public String refund(String outTradeNo, String outRefundNo, BigDecimal refund, BigDecimal total) throws Exception {
@@ -231,5 +231,32 @@ public class WeChatPayUtil {
 
         //调用申请退款接口
         return post(REFUNDS, body);
+    }
+
+    public JSONObject sucess(String prepayId) throws Exception {
+        String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+        String nonceStr = RandomStringUtils.randomNumeric(32);
+
+
+        ArrayList<Object> list = new ArrayList<>();
+        list.add(weChatProperties.getAppid());
+        list.add(timeStamp);
+        list.add(nonceStr);
+        list.add("prepay_id=" + prepayId);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Object o : list) {
+            stringBuilder.append(o).append("\n");
+        }
+
+        String packageSign = "123456";
+
+        JSONObject jo = new JSONObject();
+        jo.put("timeStamp", timeStamp);
+        jo.put("nonceStr", nonceStr);
+        jo.put("package", "prepay_id=" + prepayId);
+        jo.put("signType", "RSA");
+        jo.put("paySign", packageSign);
+
+        return jo;
     }
 }
