@@ -537,7 +537,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderPaymentVO success(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
+    public OrderPaymentVO skipPay(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         paySuccess(ordersPaymentDTO.getOrderNumber());
         return weChatPayUtil.sucess(ordersPaymentDTO.getOrderNumber()).toJavaObject(OrderPaymentVO.class);
     }
@@ -558,5 +558,20 @@ public class OrderServiceImpl implements OrderService {
         map.put("content", "订单号:" + ordersDB.getNumber());
 
         webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
+
+    @Override
+    public void skipCancel(OrdersCancelDTO ordersCancelDTO) {
+        Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
+
+        // 管理端取消订单需要退款，根据订单id更新订单状态、取消原因、取消时间
+        Orders orders = new Orders();
+        orders.setId(ordersCancelDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
+        orders.setCancelTime(LocalDateTime.now());
+        if (ordersDB.getPayStatus() == 1) orders.setPayStatus(2);
+
+        orderMapper.update(orders);
     }
 }

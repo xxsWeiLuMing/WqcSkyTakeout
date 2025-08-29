@@ -45,7 +45,7 @@ public class OrderController {
         return Result.success(orderPaymentVO);*/
 
         log.info("跳过支付，默认支付成功:{}", ordersPaymentDTO);
-        OrderPaymentVO orderPaymentVO = orderService.success(ordersPaymentDTO);
+        OrderPaymentVO orderPaymentVO = orderService.skipPay(ordersPaymentDTO);
         return Result.success(orderPaymentVO);
     }
 
