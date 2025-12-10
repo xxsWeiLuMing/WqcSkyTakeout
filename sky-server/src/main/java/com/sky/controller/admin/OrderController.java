@@ -85,7 +85,8 @@ public class OrderController {
     @PutMapping("/rejection")
     @ApiOperation("拒单")
     public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) throws Exception {
-        orderService.rejection(ordersRejectionDTO);
+        //orderService.rejection(ordersRejectionDTO);
+        orderService.skipRejection(ordersRejectionDTO);
         return Result.success();
     }
 
