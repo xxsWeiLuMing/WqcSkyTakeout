@@ -63,4 +63,6 @@ public interface OrderService {
     void skipCancel(OrdersCancelDTO ordersCancelDTO);
 
     void skipRejection(OrdersRejectionDTO ordersRejectionDTO);
+
+    void skipUserCancelById(Long id);
 }

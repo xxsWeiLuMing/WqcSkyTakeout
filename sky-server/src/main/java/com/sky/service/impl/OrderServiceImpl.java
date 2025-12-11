@@ -563,9 +563,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void skipCancel(OrdersCancelDTO ordersCancelDTO) {
         Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
+        Orders orders = new Orders();
+
+        Integer payStatus = ordersDB.getPayStatus();
+        if (payStatus == 1) {
+            //用户已支付，需要退款
+            orders.setPayStatus(Orders.REFUND);
+        }
 
         // 管理端取消订单需要退款，根据订单id更新订单状态、取消原因、取消时间
-        Orders orders = new Orders();
+
         orders.setId(ordersCancelDTO.getId());
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelReason(ordersCancelDTO.getCancelReason());
@@ -579,6 +586,7 @@ public class OrderServiceImpl implements OrderService {
     public void skipRejection(OrdersRejectionDTO ordersRejectionDTO) {
         // 根据id查询订单
         Orders ordersDB = orderMapper.getById(ordersRejectionDTO.getId());
+        Orders orders = new Orders();
 
         // 订单只有存在且状态为2（待接单）才可以拒单
         if (ordersDB == null || !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
@@ -587,18 +595,41 @@ public class OrderServiceImpl implements OrderService {
 
         //支付状态
         Integer payStatus = ordersDB.getPayStatus();
-        if (payStatus == Orders.PAID) {
+        if (payStatus == 1) {
             //用户已支付，需要退款
-
+            orders.setPayStatus(Orders.REFUND);
         }
 
         // 拒单需要退款，根据订单id更新订单状态、拒单原因、取消时间
-        Orders orders = new Orders();
         orders.setId(ordersDB.getId());
         orders.setStatus(Orders.CANCELLED);
         orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
         orders.setCancelTime(LocalDateTime.now());
 
+        orderMapper.update(orders);
+    }
+
+    @Override
+    public void skipUserCancelById(Long id) {
+        // 校验订单
+        // 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        Orders ordersDB = orderMapper.getById(id);
+        if (ordersDB == null) throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        if (ordersDB.getStatus() > 2) throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+
+        Orders orders = new Orders();
+        orders.setId(ordersDB.getId());
+
+        // 订单处于待接单状态下取消，需要进行退款
+        if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            //支付状态修改为 退款
+            orders.setPayStatus(Orders.REFUND);
+        }
+
+        // 更新订单状态、取消原因、取消时间
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("用户取消");
+        orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
     }
 }
